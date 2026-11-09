@@ -7,7 +7,7 @@ import { AboutUs } from "@/components/home/AboutUs";
 import { HeroBanner } from "@/components/home/HeroBanner";
 import { StoryReel } from "@/components/home/StoryReel";
 import { ArtWall } from "@/components/home/ArtWall";
-
+import { Gallery } from "@/components/home/Gallery";
 import { MeetStudio } from "@/components/home/MeetStudio";
 import { en } from "@/locales";
 
@@ -27,7 +27,7 @@ export default function Home() {
 
         {/* ── Story Reel: Inspirational origin video section ── */}
         <StoryReel />
-
+        <Gallery />
         <MeetStudio />
 
         {/* Cookie Banner */}
