@@ -29,6 +29,8 @@ export function CustomPaintbrushCursor() {
       posRef.current.y = targetPosRef.current.y;
 
       cursorEl.style.transform = `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0)`;
+      const underPointer = document.elementFromPoint(posRef.current.x, posRef.current.y);
+      cursorEl.classList.toggle("is-story-cursor", Boolean(underPointer?.closest("#story-reel")));
 
       isTicking = false;
     };
@@ -76,11 +78,19 @@ export function CustomPaintbrushCursor() {
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    const handleScroll = () => {
+      if (!isTicking) {
+        isTicking = true;
+        rafIdRef.current = requestAnimationFrame(render);
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
     document.addEventListener("mouseleave", handleMouseLeave, { passive: true });
     document.addEventListener("mouseenter", handleMouseEnter, { passive: true });
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
       if (rafIdRef.current) {
@@ -113,6 +123,7 @@ export function CustomPaintbrushCursor() {
           className="w-11 h-11 drop-shadow-md select-none pointer-events-none"
         />
       </div>
+      <div className="story-cursor-disc"><span className="font-pencil">SnapArt</span><span>IN THE MAKING ↗</span></div>
     </div>
   );
 }

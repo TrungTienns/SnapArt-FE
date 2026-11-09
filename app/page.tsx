@@ -5,7 +5,10 @@ import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { AboutUs } from "@/components/home/AboutUs";
 import { HeroBanner } from "@/components/home/HeroBanner";
+import { StoryReel } from "@/components/home/StoryReel";
+import { ArtWall } from "@/components/home/ArtWall";
 
+import { MeetStudio } from "@/components/home/MeetStudio";
 import { en } from "@/locales";
 
 export default function Home() {
@@ -20,6 +23,12 @@ export default function Home() {
       <main className="relative flex-1 w-full">
         <HeroBanner />
         <AboutUs />
+        <ArtWall />
+
+        {/* ── Story Reel: Inspirational origin video section ── */}
+        <StoryReel />
+
+        <MeetStudio />
 
         {/* Cookie Banner */}
         {!cookieAccepted && (
