@@ -27,7 +27,7 @@ export function SmoothScrollProvider({
     const sectionEasing = (t: number) => t * t * t * (10 + t * (-15 + 6 * t));
 
     const navigatePanel = (direction: number, distance: number) => {
-      if (reducedMotion.matches || document.fullscreenElement) return false;
+      if (reducedMotion.matches || document.fullscreenElement || document.querySelector("[data-home-intro]")) return false;
       const panels = Array.from(document.querySelectorAll<HTMLElement>("main > section, main > footer"));
       const y = window.scrollY;
       const viewport = window.innerHeight;

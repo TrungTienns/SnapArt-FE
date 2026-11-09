@@ -60,6 +60,70 @@ body {
   cursor: default;
 }
 
+/* The first brushstroke of a homepage visit. */
+html:has(.home-intro) { overflow: hidden; scrollbar-gutter: stable; }
+
+.home-intro {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  width: 100vw;
+  display: grid;
+  place-items: center;
+  padding: clamp(18px,4vw,60px);
+  overflow: hidden;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-raised);
+  background-image: radial-gradient(color-mix(in srgb,var(--color-text-primary) 10%,transparent) .5px, transparent .6px);
+  background-size: 4px 4px;
+  user-select: none;
+}
+
+.home-intro[data-home-intro="revealing"] {
+  transform: translateY(-102%);
+  transition: transform 600ms cubic-bezier(.72,0,.2,1);
+}
+
+.home-intro-center { text-align: center; }
+.home-intro-wordmark {
+  font-size: min(27vw,53svh,420px);
+  line-height: 1;
+  white-space: nowrap;
+  transform: rotate(-5deg);
+  opacity: calc(.15 + var(--intro-progress) * .85);
+  filter: blur(calc((1 - var(--intro-progress)) * clamp(5px,1.6vmin,12px)));
+}
+.home-intro-last-letter { position: relative; display: inline-block; }
+.home-intro-flower {
+  position: absolute;
+  left: 100%;
+  bottom: calc(100% - .15em);
+  width: .19em;
+  height: auto;
+  transform: translateX(-25%) rotate(12deg);
+}
+.home-intro-stroke { display: block; width: min(72%,680px); height: auto; margin: clamp(12px,3.5vmin,32px) auto 0; color: var(--color-wordmark-r); }
+.home-intro-counter {
+  position: absolute;
+  right: clamp(18px,4vw,60px);
+  bottom: clamp(18px,4vw,60px);
+  font-size: clamp(38px,8vmin,76px);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: .88;
+  letter-spacing: -.075em;
+}
+.home-intro-counter small { margin-left: 4px; font-size: .43em; letter-spacing: -.035em; }
+
+[data-intro-pending] :is(.animate-hero-header,.animate-sun-badge-left,.animate-sun-badge-right,.animate-title-up,.animate-subtitle-up,.animate-cookie-in) {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-intro-wordmark { filter: none; opacity: 1; }
+  .home-intro[data-home-intro="revealing"] { transition: none; }
+}
+
 /* Custom Authentic Canvas Woven Fabric Pattern */
 .bg-canvas-texture {
   background-color: #f7f4ed;
