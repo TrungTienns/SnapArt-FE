@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Pastel Rose Sun Center -->
+  <polygon points="24,2 29,13 41,7 38,19 48,24 40,31 43,42 31,40 24,48 17,40 5,42 8,31 0,24 10,19 7,7 19,13" fill="#f2b8cb" />
+  <!-- Pictoric Whimsical Eyes -->
+  <circle cx="20" cy="22" r="1.8" fill="#411f15" />
+  <circle cx="28" cy="22" r="1.8" fill="#411f15" />
+  <!-- Smiling Mouth -->
+  <path d="M21 27 Q 24 30 27 27" stroke="#411f15" stroke-width="1.8" stroke-linecap="round" />
+</svg>
