@@ -23,8 +23,8 @@ export function SmoothScrollProvider({
     let panelSettledAt = -Infinity;
     let panelDirection = 0;
     const isPanelMoving = () => lenis.isScrolling === "smooth" && lenis.userData === panelMotion;
-    // Zero velocity and acceleration at both ends avoids an abrupt section jump.
-    const sectionEasing = (t: number) => t * t * t * (10 + t * (-15 + 6 * t));
+    // Ease into and out of panel transitions without rushing through the middle.
+    const sectionEasing = (t: number) => (1 - Math.cos(Math.PI * t)) / 2;
 
     const navigatePanel = (direction: number, distance: number) => {
       if (reducedMotion.matches || document.fullscreenElement || document.querySelector("[data-home-intro]")) return false;
@@ -70,7 +70,7 @@ export function SmoothScrollProvider({
       if (target === undefined || Math.abs(target - y) < 2) return false;
       panelDirection = direction;
       const travel = Math.abs(target - y) / viewport;
-      const duration = Math.min(1.65, Math.max(0.8, 1.35 * Math.sqrt(travel)));
+      const duration = Math.min(1.6, Math.max(0.65, 1.4 * Math.sqrt(travel)));
       lenis.scrollTo(target, {
         duration,
         easing: sectionEasing,

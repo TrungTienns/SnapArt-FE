@@ -30,12 +30,12 @@ export default function Home() {
         {/* Hero Banner Component */}
         <main className="relative flex-1 w-full">
           <HeroBanner />
+          <Gallery/>
           <AboutUs />
           <ArtWall />
 
           {/* ── Story Reel: Inspirational origin video section ── */}
           <StoryReel />
-          <Gallery />
           <MeetStudio />
 
           {/* Cookie Banner */}

@@ -15,11 +15,34 @@ export function Header() {
     const header = headerRef.current;
     if (!header) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const isHome = pathname === "/";
+    const scrollThreshold = 12;
+    let turnPoint = Math.max(0, window.scrollY);
+    let hiddenOnHome = turnPoint > scrollThreshold;
     let frame: number | null = null;
     const update = () => {
       frame = null;
-      const progress = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.65)));
       const focused = header.contains(document.activeElement);
+
+      if (isHome) {
+        const y = Math.max(0, window.scrollY);
+
+        // Measure from the last peak or valley so small trackpad movements accumulate.
+        turnPoint = hiddenOnHome ? Math.max(turnPoint, y) : Math.min(turnPoint, y);
+        const shouldHide = y > scrollThreshold &&
+          (hiddenOnHome ? turnPoint - y < scrollThreshold : y - turnPoint >= scrollThreshold);
+        if (shouldHide !== hiddenOnHome) {
+          hiddenOnHome = shouldHide;
+          turnPoint = y;
+        }
+
+        const hidden = hiddenOnHome && !focused;
+        header.toggleAttribute("data-header-hidden", hidden);
+        header.inert = hidden;
+        return;
+      }
+
+      const progress = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.65)));
       const opacity = focused ? 1 : reducedMotion.matches ? (progress >= 1 ? 0 : 1) : 1 - progress;
       const hidden = opacity <= 0.01;
       header.style.opacity = opacity.toFixed(3);
@@ -43,11 +66,16 @@ export function Header() {
       header.removeEventListener("focusout", scheduleUpdate);
       reducedMotion.removeEventListener("change", scheduleUpdate);
       if (frame !== null) cancelAnimationFrame(frame);
+      header.removeAttribute("data-header-hidden");
+      header.style.removeProperty("opacity");
+      header.style.removeProperty("visibility");
+      header.style.removeProperty("pointer-events");
+      header.inert = false;
     };
   }, [pathname]);
 
   return (
-    <header ref={headerRef} className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 md:px-12 text-[#411f15] bg-[#f6f6f6]/80 backdrop-blur-md">
+    <header ref={headerRef} data-home-header={pathname === "/" || undefined} className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 md:px-12 text-[#411f15] bg-[#f6f6f6]/80 backdrop-blur-md">
       {/* Left: Brand Logo SVG + Language Toggle */}
       <div className="flex items-center gap-6">
         <Link href="/" className="group flex items-center">

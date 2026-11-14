@@ -6,7 +6,10 @@ import Link from "next/link";
 import { galleryPhotos, type GalleryPhoto } from "@/constants/gallery";
 
 const previewPhotos = galleryPhotos.slice(0, 5);
+// Keep archive-only images nearest the spread so they differ from the open photo.
+const fanPhotos = [5, 1, 2, 0, 6, 4, 7, 3].map(index => galleryPhotos[index]);
 const turnDuration = 900;
+const turnThreshold = 0.5;
 const albumNotes = [
   "Colour always finds a seat.",
   "It starts with a brushstroke.",
@@ -28,18 +31,29 @@ type PageDrag = {
   pageWidth: number;
   direction?: Direction;
   progress: number;
-  commit?: boolean;
+  committed?: boolean;
 };
 
-function settlePage(animation: Animation, commit: boolean) {
-  animation.playbackRate = commit ? 1.65 : -1.8;
-  animation.play();
+type PageTurn = {
+  to: number;
+  direction: Direction;
+  drag?: PageDrag;
+  destination?: 0 | 1;
+};
+
+function drawPage(leaf: HTMLDivElement, progress: number, direction: Direction) {
+  const position = direction === 1 ? progress : 1 - progress;
+  const flex = Math.sin(Math.PI * position);
+  const tilt = Math.sin(2 * Math.PI * position) * flex;
+
+  leaf.style.transform = `rotateY(${-180 * position}deg) skewY(${4 * tilt}deg) scaleX(${1 - 0.09 * flex})`;
+  leaf.style.setProperty("--snap-page-flex", String(flex));
 }
 
 function BookFan() {
   return (
     <div className="snap-book-fan" aria-hidden="true">
-      {galleryPhotos.map((photo, index) => (
+      {fanPhotos.map((photo, index) => (
         <div
           className="snap-book-fan-sheet"
           data-side={index < 4 ? "left" : "right"}
@@ -61,7 +75,7 @@ function BookPhoto({ photo }: { photo: GalleryPhoto }) {
           src={photo.image}
           alt={photo.alt}
           fill
-          sizes="(max-width: 660px) 44vw, (max-width: 1688px) 32vw, 540px"
+          sizes="(max-width: 660px) 45vw, (max-width: 1500px) 34vw, 510px"
           placeholder={typeof photo.image === "string" ? "empty" : "blur"}
           draggable={false}
         />
@@ -87,9 +101,8 @@ function BookText({ index, moving = false }: { index: number; moving?: boolean }
 
 export function Gallery() {
   const [page, setPage] = useState(0);
-  const [turn, setTurn] = useState<{ to: number; direction: Direction; drag?: PageDrag } | null>(null);
+  const [turn, setTurn] = useState<PageTurn | null>(null);
   const leaf = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<Animation | null>(null);
   const dragRef = useRef<PageDrag | null>(null);
   const lastPage = previewPhotos.length - 1;
   const rightPage = turn?.direction === 1 ? turn.to : page;
@@ -98,37 +111,34 @@ export function Gallery() {
   const leafBack = turn?.direction === 1 ? turn.to : page;
 
   useLayoutEffect(() => {
-    if (!turn || !leaf.current) return;
+    const sheet = leaf.current;
+    if (!turn || !sheet) return;
 
-    const animation = leaf.current.animate(
-      [
-        { transform: "rotateY(0deg)" },
-        { transform: "rotateY(-88deg) rotateX(4deg)", offset: .46 },
-        { transform: "rotateY(-180deg)" },
-      ],
-      {
-        duration: turnDuration,
-        direction: turn.direction === 1 ? "normal" : "reverse",
-        easing: turn.drag ? "linear" : "cubic-bezier(.52,.08,.24,1)",
-        fill: "both",
-      },
-    );
-    animationRef.current = animation;
-    animation.onfinish = () => {
-      if (animation.playbackRate > 0) setPage(turn.to);
-      setTurn(null);
+    const { drag, destination, direction, to } = turn;
+    const start = drag?.progress ?? 0;
+    drawPage(sheet, start, direction);
+    if (destination === undefined) return;
+
+    const distance = destination - start;
+    const duration = drag ? 300 + 300 * Math.abs(distance) : turnDuration;
+    const startedAt = performance.now();
+    let frame: number;
+
+    const advance = (now: number) => {
+      const time = Math.min(1, (now - startedAt) / duration);
+      const eased = drag ? 1 - (1 - time) ** 3 : (1 - Math.cos(Math.PI * time)) / 2;
+      drawPage(sheet, start + distance * eased, direction);
+
+      if (time < 1) {
+        frame = requestAnimationFrame(advance);
+      } else {
+        if (destination === 1) setPage(to);
+        setTurn(null);
+      }
     };
 
-    if (turn.drag) {
-      animation.pause();
-      animation.currentTime = turn.drag.progress * turnDuration;
-      if (turn.drag.commit !== undefined) settlePage(animation, turn.drag.commit);
-    }
-
-    return () => {
-      animation.cancel();
-      animationRef.current = null;
-    };
+    frame = requestAnimationFrame(advance);
+    return () => cancelAnimationFrame(frame);
   }, [turn]);
 
   const turnPage = (direction: Direction) => {
@@ -137,7 +147,7 @@ export function Gallery() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setPage(to);
     } else {
-      setTurn({ to, direction });
+      setTurn({ to, direction, destination: 1 });
     }
   };
 
@@ -158,7 +168,7 @@ export function Gallery() {
 
   const moveDrag = (event: PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (!drag || drag.pointerId !== event.pointerId || drag.committed) return;
     const distance = drag.startX - event.clientX;
 
     if (!drag.direction) {
@@ -170,25 +180,32 @@ export function Gallery() {
       setTurn({ to, direction, drag });
     }
 
-    drag.progress = Math.max(.001, Math.min(.995, distance * drag.direction / drag.pageWidth));
-    if (animationRef.current) animationRef.current.currentTime = drag.progress * turnDuration;
+    drag.progress = Math.max(0, Math.min(turnThreshold, distance * drag.direction / drag.pageWidth));
+    if (leaf.current) drawPage(leaf.current, drag.progress, drag.direction);
+
+    if (drag.progress >= turnThreshold) {
+      drag.committed = true;
+      setTurn(current => current?.drag === drag ? { ...current, destination: 1 } : current);
+    }
   };
 
-  const endDrag = (event: PointerEvent<HTMLDivElement>, allowTurn: boolean) => {
+  const endDrag = (event: PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
     dragRef.current = null;
-    if (!drag.direction) return;
-    drag.commit = allowTurn && drag.progress >= .28;
-    if (animationRef.current) settlePage(animationRef.current, drag.commit);
+    if (drag.direction && !drag.committed) {
+      setTurn(current => current?.drag === drag ? { ...current, destination: 0 } : current);
+    }
   };
 
   return (
     <section id="gallery" className="snap-gallery" aria-labelledby="gallery-title">
       <header className="snap-book-heading">
-        <h2 id="gallery-title" className="art-kicker">SnapArt / Gallery</h2>
-        <p className="font-pencil">a little colour on every page</p>
-        <span aria-hidden="true">Vol. 01</span>
+        <div>
+          <p className="art-kicker">SnapArt / Gallery</p>
+          <h2 id="gallery-title">The studio album</h2>
+        </div>
+        <p className="snap-book-marginalia font-pencil">a little colour on every page</p>
       </header>
 
       <div className="snap-book-stage">
@@ -198,13 +215,12 @@ export function Gallery() {
           id="gallery-album-pages"
           onPointerDown={startDrag}
           onPointerMove={moveDrag}
-          onPointerUp={event => endDrag(event, true)}
-          onPointerCancel={event => endDrag(event, false)}
-          onLostPointerCapture={event => endDrag(event, false)}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onLostPointerCapture={endDrag}
         >
           <div className="snap-book-left">
             <BookPhoto photo={previewPhotos[leftPage]} />
-            {!turn && <span className="snap-book-drag-stamp" aria-hidden="true"><span>↔</span> Drag to turn</span>}
           </div>
           <div className="snap-book-right" inert={!!turn}>
             <BookText index={rightPage} />
