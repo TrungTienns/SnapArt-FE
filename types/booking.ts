@@ -11,3 +11,12 @@ export interface Booking {
   createdAt: string;
   notes?: string;
 }
+
+export interface BookingRequestInput {
+  workshopId: string;
+  preferredDate: string;
+  seatCount: number;
+  contactName: string;
+  contactPhone: string;
+  notes?: string;
+}
