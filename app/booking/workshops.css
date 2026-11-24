@@ -739,3 +739,9 @@
 .workshop-calendar button[aria-pressed="true"] { background: var(--workshop-ink); color: var(--workshop-paper); }
 .workshop-calendar button[aria-pressed="true"]:hover { background: var(--workshop-ink); }
 .workshop-calendar, .workshop-calendar button { cursor: revert !important; }
+
+.booking-qr { display: grid; justify-items: center; gap: 12px; margin-block: 20px; }
+.booking-qr img { width: min(240px, 100%); height: auto; border-radius: 12px; }
+.booking-qr a { min-height: 44px; display: inline-flex; align-items: center; text-decoration: underline; text-underline-offset: 4px; }
+.booking-qr a:focus-visible { outline: 2px solid var(--color-wordmark-r); outline-offset: 4px; }
+.booking-qr figcaption { max-width: 38ch; text-align: center; font-size: 14px; line-height: 1.5; }

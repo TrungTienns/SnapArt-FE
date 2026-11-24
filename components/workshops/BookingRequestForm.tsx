@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { BookingQr } from "./BookingQr";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { WorkshopDateField, parseWorkshopDate } from "./WorkshopDateField";
 import { galleryPhotos } from "@/constants/gallery";
@@ -276,6 +277,7 @@ export function BookingRequestForm() {
               {receipt.code ? (
                 <>
                   <p>Keep this reference. We’ll call to confirm the date and time of your workshop.</p>
+                  <BookingQr key={receipt.code} code={receipt.code} />
                   <p className="workshop-reference"><span>Booking reference</span><strong>{receipt.code}</strong></p>
                 </>
               ) : <p>You’ve reached the end of the booking preview.</p>}
