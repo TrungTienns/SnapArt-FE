@@ -23,7 +23,7 @@ interface BookingPage {
   nextCursor: string | null;
 }
 
-const inputClass = "min-h-11 rounded-sm border border-current bg-white px-3 py-2 text-base";
+const inputClass = "min-w-0 max-w-full min-h-11 rounded-sm border border-current bg-white px-3 py-2 text-base";
 const actionClass = "inline-flex min-h-11 items-center rounded-full border border-current px-4 py-1 text-sm font-semibold hover:bg-[var(--color-surface-raised)] disabled:opacity-50";
 const studioTime = new Intl.DateTimeFormat("en-GB", {
   dateStyle: "medium",
@@ -175,7 +175,7 @@ export function BookingAdmin() {
                         const data = new FormData(event.currentTarget);
                         updateStatus(booking, "confirmed", String(data.get("start")));
                       }}>
-                        <label className="grid gap-1 text-sm">
+                        <label className="grid min-w-0 max-w-full gap-1 text-sm">
                           Start time in Vietnam
                           <input className={inputClass} name="start" type="datetime-local" required />
                         </label>

@@ -22,7 +22,7 @@ export function Header() {
     let frame: number | null = null;
     const update = () => {
       frame = null;
-      const focused = header.contains(document.activeElement);
+      const focused = header.contains(document.activeElement) || !!header.querySelector("details[open]");
 
       if (isHome) {
         const y = Math.max(0, window.scrollY);
@@ -36,7 +36,7 @@ export function Header() {
           turnPoint = y;
         }
 
-        const hidden = hiddenOnHome && !focused;
+        const hidden = hiddenOnHome && !focused && !header.querySelector("details[open]");
         header.toggleAttribute("data-header-hidden", hidden);
         header.inert = hidden;
         return;
@@ -75,7 +75,7 @@ export function Header() {
   }, [pathname]);
 
   return (
-    <header ref={headerRef} data-home-header={pathname === "/" || undefined} className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 md:px-12 text-[#411f15] bg-[#f6f6f6]/80 backdrop-blur-md">
+    <header ref={headerRef} data-home-header={pathname === "/" || undefined} className="site-header fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 md:px-12 text-[#411f15] bg-[#f6f6f6]/80 backdrop-blur-md">
       {/* Left: Brand Logo SVG + Language Toggle */}
       <div className="flex items-center gap-6">
         <Link href="/" className="group flex items-center">
@@ -96,7 +96,7 @@ export function Header() {
       </div>
 
       {/* Center: Social Handle */}
-      <div className="hidden lg:flex items-center">
+      <div className="site-header-social hidden lg:flex items-center">
         <a
           href="https://instagram.com"
           target="_blank"
@@ -108,7 +108,7 @@ export function Header() {
       </div>
 
       {/* Right: Search, Navigation, Custom Action */}
-      <div className="flex items-center gap-6 md:gap-8">
+      <div className="site-header-desktop flex items-center gap-6 md:gap-8">
         <button
           type="button"
           aria-label="Search workshops or custom art"
@@ -163,6 +163,26 @@ export function Header() {
           </svg>
         </Link>
       </div>
+      <details className="site-mobile-menu" key={pathname} onKeyDown={event => {
+        if (event.key === "Escape") {
+          event.currentTarget.open = false;
+          event.currentTarget.querySelector("summary")?.focus();
+        }
+      }}>
+        <summary aria-label="Toggle navigation"><span>Menu</span><span className="site-menu-icon" aria-hidden="true"><i /><i /><i /></span></summary>
+        <nav aria-label="Mobile navigation" onClick={event => {
+          if (event.target instanceof Element && event.target.closest("a")) {
+            event.currentTarget.closest("details")?.removeAttribute("open");
+          }
+        }}>
+          <p className="site-menu-note font-pencil">a place for your next idea.</p>
+          <Link href="/workshops">Workshops <span aria-hidden="true">↗</span></Link>
+          <Link href="/custom-art">Custom art <span aria-hidden="true">↗</span></Link>
+          <Link href="/gallery">Gallery <span aria-hidden="true">↗</span></Link>
+          <Link href="/about">Our studio <span aria-hidden="true">↗</span></Link>
+          <Link href="/booking" className="site-mobile-book">Book a workshop <span aria-hidden="true">↗</span></Link>
+        </nav>
+      </details>
     </header>
   );
 }

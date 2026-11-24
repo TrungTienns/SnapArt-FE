@@ -38,7 +38,7 @@ export default function Home() {
           {!cookieAccepted && (
             <aside
               aria-label="Cookie consent banner"
-              className="fixed bottom-4 right-4 md:bottom-6 md:right-8 z-50 flex items-center rounded-full bg-[#f2b8cb] text-[#411f15] border border-[#411f15]/20 shadow-lg px-4 py-2 text-[11px] md:text-xs font-bold gap-3 animate-cookie-in"
+              className="site-cookie-banner fixed bottom-4 right-4 md:bottom-6 md:right-8 z-50 flex items-center rounded-full bg-[#f2b8cb] text-[#411f15] border border-[#411f15]/20 shadow-lg px-4 py-2 text-[11px] md:text-xs font-bold gap-3 animate-cookie-in"
             >
               <span>
                 {en.cookie.text}{" "}

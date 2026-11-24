@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Point {
   x: number;
@@ -35,6 +35,7 @@ interface InteractiveCanvasPaperProps {
 }
 
 export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperProps) {
+  const [drawingEnabled, setDrawingEnabled] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const segmentsRef = useRef<StrokeSegment[]>([]);
   const pointsBufferRef = useRef<Point[]>([]);
@@ -78,7 +79,7 @@ export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperPr
     window.addEventListener("scroll", updateRects, { passive: true });
 
     // Life duration before full disappearance (3s)
-    const LIFE_SPAN = 3000;
+    const LIFE_SPAN = drawingEnabled ? 6000 : 3000;
 
     const render = () => {
       const now = performance.now();
@@ -137,7 +138,9 @@ export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperPr
 
     // Listen to global window mousemove so mouse movement over ANY element
     // triggers drawing seamlessly, using cached rects to avoid layout reflows.
-    const handleWindowMouseMove = (e: MouseEvent) => {
+    let activePointer: number | null = null;
+
+    const addPoint = (e: { clientX: number; clientY: number }) => {
       let canvasRect = cachedCanvasRectRef.current;
       let drawRect = cachedDrawRectRef.current;
 
@@ -171,7 +174,7 @@ export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperPr
         const last = pts[pts.length - 1];
         const dx = currentPoint.x - last.x;
         const dy = currentPoint.y - last.y;
-        if (dx * dx + dy * dy < 9) {
+        if (dx * dx + dy * dy < 1) {
           return;
         }
       }
@@ -210,7 +213,7 @@ export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperPr
         });
 
         // Cap segments to prevent memory creep during prolonged fast drawing
-        if (segmentsRef.current.length > 180) {
+        if (segmentsRef.current.length > 1200) {
           segmentsRef.current.shift();
         }
 
@@ -223,22 +226,100 @@ export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperPr
       }
     };
 
-    window.addEventListener("mousemove", handleWindowMouseMove, { passive: true });
+    const handlePointerMove = (event: PointerEvent) => {
+      // Touch is handled separately to prevent native scrolling on mobile Safari.
+      if (event.pointerType === "touch") return;
+      if (event.pointerType !== "mouse" && event.pointerId !== activePointer) return;
+      const samples = event.getCoalescedEvents?.() ?? [];
+      for (const sample of samples.length ? samples : [event]) addPoint(sample);
+    };
+
+    let activeTouch: number | null = null;
+    const startTouch = (event: TouchEvent) => {
+      if (!drawingEnabled || activeTouch !== null || event.touches.length !== 1) return;
+      const touch = event.changedTouches[0];
+      activeTouch = touch.identifier;
+      if (event.cancelable) event.preventDefault();
+      updateRects();
+      pointsBufferRef.current = [];
+      addPoint(touch);
+      const first = pointsBufferRef.current[0];
+      if (first) pointsBufferRef.current.push({ ...first });
+    };
+    const moveTouch = (event: TouchEvent) => {
+      if (activeTouch === null) return;
+      if (event.cancelable) event.preventDefault();
+      const touch = Array.from(event.touches).find(item => item.identifier === activeTouch);
+      if (touch) addPoint(touch);
+    };
+    const endTouch = (event: TouchEvent) => {
+      if (!Array.from(event.changedTouches).some(item => item.identifier === activeTouch)) return;
+      activeTouch = null;
+      pointsBufferRef.current = [];
+    };
+
+    const startStroke = (event: PointerEvent) => {
+      if (!drawingEnabled || event.pointerType === "touch" || !event.isPrimary || event.button !== 0) return;
+      activePointer = event.pointerId;
+      pointsBufferRef.current = [];
+      updateRects();
+      canvas.setPointerCapture(event.pointerId);
+      handlePointerMove(event);
+      // Seed the curve so even a short swipe leaves a mark.
+      const first = pointsBufferRef.current[0];
+      if (first) pointsBufferRef.current.push({ ...first });
+    };
+    const endStroke = (event: PointerEvent) => {
+      if (event.pointerId !== activePointer) return;
+      activePointer = null;
+      pointsBufferRef.current = [];
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    canvas.addEventListener("touchstart", startTouch, { passive: false });
+    canvas.addEventListener("touchmove", moveTouch, { passive: false });
+    canvas.addEventListener("touchend", endTouch);
+    canvas.addEventListener("touchcancel", endTouch);
+    canvas.addEventListener("pointerdown", startStroke);
+    canvas.addEventListener("pointerup", endStroke);
+    canvas.addEventListener("pointercancel", endStroke);
+    canvas.addEventListener("lostpointercapture", endStroke);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("scroll", updateRects);
-      window.removeEventListener("mousemove", handleWindowMouseMove);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+      window.removeEventListener("pointermove", handlePointerMove);
+      canvas.removeEventListener("touchstart", startTouch);
+      canvas.removeEventListener("touchmove", moveTouch);
+      canvas.removeEventListener("touchend", endTouch);
+      canvas.removeEventListener("touchcancel", endTouch);
+      canvas.removeEventListener("pointerdown", startStroke);
+      canvas.removeEventListener("pointerup", endStroke);
+      canvas.removeEventListener("pointercancel", endStroke);
+      canvas.removeEventListener("lostpointercapture", endStroke);
+      pointsBufferRef.current = [];
+      isLoopRunningRef.current = false;
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
     };
-  }, [drawAreaRef]);
+  }, [drawAreaRef, drawingEnabled]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none z-0"
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        data-lenis-prevent={drawingEnabled || undefined}
+        className={`banner-paint-canvas absolute inset-0 w-full h-full z-0${drawingEnabled ? " is-drawing" : ""}`}
+      />
+      <button
+        type="button"
+        className="banner-paint-toggle"
+        aria-pressed={drawingEnabled}
+        onClick={() => setDrawingEnabled(enabled => !enabled)}
+      >
+        {drawingEnabled ? "Xong · cuộn tiếp ↓" : "Vẽ trên banner"}
+      </button>
+    </>
   );
 }
