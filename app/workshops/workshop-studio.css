@@ -318,3 +318,16 @@
 @media (prefers-reduced-motion: reduce) {
   .workshop-studio-ticket > a { transition: none; }
 }
+
+@media (max-width: 980px) {
+  .workshop-studio-ticket { gap: 20px; }
+}
+@media (max-width: 600px) {
+  .workshop-studio { --studio-gutter: 24px; }
+  .workshop-studio-hero { min-height: min(740px, 100svh); padding-top: 112px; }
+  .workshop-studio-intro h1 { font-size: clamp(52px, 13vw, 78px); }
+  .workshop-studio h2 { font-size: clamp(38px, 10vw, 60px); }
+  .workshop-studio-ticket { grid-template-columns: minmax(0, 1fr); padding: 28px 22px; }
+  .workshop-studio-palette { grid-column: 1; grid-row: auto; width: 100px; justify-self: end; }
+  .workshop-studio-ticket > a { min-height: 48px; }
+}

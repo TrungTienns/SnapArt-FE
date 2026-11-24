@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Point {
   x: number;
@@ -35,6 +35,7 @@ interface InteractiveCanvasPaperProps {
 }
 
 export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperProps) {
+  const [drawingEnabled, setDrawingEnabled] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const segmentsRef = useRef<StrokeSegment[]>([]);
   const pointsBufferRef = useRef<Point[]>([]);
@@ -137,7 +138,10 @@ export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperPr
 
     // Listen to global window mousemove so mouse movement over ANY element
     // triggers drawing seamlessly, using cached rects to avoid layout reflows.
-    const handleWindowMouseMove = (e: MouseEvent) => {
+    let activePointer: number | null = null;
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse" && e.pointerId !== activePointer) return;
       let canvasRect = cachedCanvasRectRef.current;
       let drawRect = cachedDrawRectRef.current;
 
@@ -223,22 +227,59 @@ export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperPr
       }
     };
 
-    window.addEventListener("mousemove", handleWindowMouseMove, { passive: true });
+    const startStroke = (event: PointerEvent) => {
+      if (!drawingEnabled || !event.isPrimary || event.button !== 0) return;
+      activePointer = event.pointerId;
+      pointsBufferRef.current = [];
+      updateRects();
+      canvas.setPointerCapture(event.pointerId);
+      handlePointerMove(event);
+      // Seed the curve so even a short swipe leaves a mark.
+      const first = pointsBufferRef.current[0];
+      if (first) pointsBufferRef.current.push({ ...first });
+    };
+    const endStroke = (event: PointerEvent) => {
+      if (event.pointerId !== activePointer) return;
+      activePointer = null;
+      pointsBufferRef.current = [];
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    canvas.addEventListener("pointerdown", startStroke);
+    canvas.addEventListener("pointerup", endStroke);
+    canvas.addEventListener("pointercancel", endStroke);
+    canvas.addEventListener("lostpointercapture", endStroke);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("scroll", updateRects);
-      window.removeEventListener("mousemove", handleWindowMouseMove);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+      window.removeEventListener("pointermove", handlePointerMove);
+      canvas.removeEventListener("pointerdown", startStroke);
+      canvas.removeEventListener("pointerup", endStroke);
+      canvas.removeEventListener("pointercancel", endStroke);
+      canvas.removeEventListener("lostpointercapture", endStroke);
+      pointsBufferRef.current = [];
+      isLoopRunningRef.current = false;
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
     };
-  }, [drawAreaRef]);
+  }, [drawAreaRef, drawingEnabled]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none z-0"
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className={`banner-paint-canvas absolute inset-0 w-full h-full z-0${drawingEnabled ? " is-drawing" : ""}`}
+      />
+      <button
+        type="button"
+        className="banner-paint-toggle"
+        aria-pressed={drawingEnabled}
+        onClick={() => setDrawingEnabled(enabled => !enabled)}
+      >
+        {drawingEnabled ? "Xong · cuộn tiếp ↓" : "Vẽ trên banner"}
+      </button>
+    </>
   );
 }

@@ -745,3 +745,25 @@
 .booking-qr a { min-height: 44px; display: inline-flex; align-items: center; text-decoration: underline; text-underline-offset: 4px; }
 .booking-qr a:focus-visible { outline: 2px solid var(--color-wordmark-r); outline-offset: 4px; }
 .booking-qr figcaption { max-width: 38ch; text-align: center; font-size: 14px; line-height: 1.5; }
+
+@media (max-width: 980px) {
+  .workshop-spread { grid-template-columns: minmax(0, 1fr); }
+  .workshop-masthead { align-items: flex-start; flex-direction: column; }
+  .workshop-masthead-note { flex-basis: auto; max-width: 46ch; }
+  .workshop-art { padding: 24px; }
+  .workshop-print { width: min(100%, 520px); margin-inline: auto; }
+  .workshop-photo { aspect-ratio: 2.2; }
+  .workshop-paper { border-left: 0; border-top: 1px solid var(--workshop-rule); }
+}
+@media (max-width: 600px) {
+  .workshop-page { padding-top: 108px; }
+  .workshop-shell { width: calc(100% - 32px); }
+  .workshop-paper { padding: 24px 18px; }
+  .workshop-masthead h1 { font-size: clamp(42px, 11vw, 64px); line-height: 1; }
+  .workshop-fields { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .workshop-form :is(input, textarea, select) { font-size: 16px; max-width: 100%; }
+  .workshop-reference strong { overflow-wrap: anywhere; }
+  .workshop-steps { gap: 8px; }
+  .workshop-calendar { max-width: 100%; }
+  .workshop-print { transform: none; }
+}

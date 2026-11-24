@@ -15,6 +15,26 @@ const shadowsIntoLight = Shadows_Into_Light({
 export const metadata: Metadata = {
   title: "SnapArt - A Creative Haven Where Ideas Awaken",
   description: "Painting workshops, bespoke art commissions, exhibitions and inspiring experiences.",
+  metadataBase: new URL("https://www.snaparthcm.com"),
+  openGraph: {
+    title: "SnapArt - A Creative Haven Where Ideas Awaken",
+    description: "Painting workshops, bespoke art commissions, exhibitions and inspiring experiences.",
+    url: "/",
+    siteName: "SnapArt",
+    type: "website",
+    images: [{
+      url: "/assets/images/snapart1.jpg",
+      width: 1920,
+      height: 2560,
+      alt: "Inside the SnapArt painting studio in Saigon",
+    }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SnapArt - A Creative Haven Where Ideas Awaken",
+    description: "Painting workshops, bespoke art commissions, exhibitions and inspiring experiences.",
+    images: ["/assets/images/snapart1.jpg"],
+  },
 };
 
 export default function RootLayout({
