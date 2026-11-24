@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Header } from "@/components/layout/Header";
+import { MainLayout } from "@/components/layout/MainLayout";
 import { galleryPhotos } from "@/constants/gallery";
 
 export const metadata: Metadata = {
@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 export default function GalleryPage() {
   return (
     <>
-      <Header />
-      <main className="snap-gallery-archive">
+
+      <MainLayout className="snap-gallery-archive">
         <header className="snap-gallery-archive-heading">
           <Link href="/#gallery" className="snap-gallery-back">← Back to the album</Link>
           <p className="art-kicker">SnapArt / Photo archive</p>
@@ -45,7 +45,7 @@ export default function GalleryPage() {
             </li>
           ))}
         </ul>
-      </main>
+      </MainLayout>
     </>
   );
 }

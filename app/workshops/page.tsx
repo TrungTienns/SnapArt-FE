@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Header } from "@/components/layout/Header";
+import { MainLayout } from "@/components/layout/MainLayout";
 import { galleryPhotos } from "@/constants/gallery";
 import "./workshop-studio.css";
 
@@ -22,8 +22,8 @@ const mediums = [
 export default function WorkshopsPage() {
   return (
     <>
-      <Header />
-      <main className="workshop-studio">
+
+      <MainLayout className="workshop-studio">
         <section className="workshop-studio-hero" aria-labelledby="workshop-studio-title">
           <Image
             className="workshop-studio-cover"
@@ -86,7 +86,7 @@ export default function WorkshopsPage() {
             <Link href="/booking">Book now <span aria-hidden="true">↗</span></Link>
           </div>
         </section>
-      </main>
+      </MainLayout>
     </>
   );
 }

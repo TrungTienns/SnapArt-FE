@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Header } from "@/components/layout/Header";
+import { MainLayout } from "@/components/layout/MainLayout";
 import { AboutUs } from "@/components/home/AboutUs";
 import { HeroBanner } from "@/components/home/HeroBanner";
 import { HomeIntro, type HomeIntroPhase } from "@/components/home/HomeIntro";
@@ -24,14 +24,10 @@ export default function Home() {
         inert={introPhase !== "done"}
         data-intro-pending={introPhase === "painting" || undefined}
       >
-        {/* Navigation Header */}
-        <Header />
-
-        {/* Hero Banner Component */}
-        <main className="relative flex-1 w-full">
+        <MainLayout>
           <HeroBanner />
-          <Gallery/>
           <AboutUs />
+          <Gallery/>
           <ArtWall />
 
           {/* ── Story Reel: Inspirational origin video section ── */}
@@ -59,7 +55,7 @@ export default function Home() {
               </button>
             </aside>
           )}
-        </main>
+        </MainLayout>
       </div>
     </>
   );

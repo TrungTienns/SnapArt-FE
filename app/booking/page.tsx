@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/layout/Header";
+import { MainLayout } from "@/components/layout/MainLayout";
 import { BookingRequestForm } from "@/components/workshops/BookingRequestForm";
 import "./workshops.css";
 
@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 export default function BookingPage() {
   return (
     <>
-      <Header />
-      <main className="workshop-page">
+
+      <MainLayout className="workshop-page">
         <div className="workshop-shell">
           <header className="workshop-masthead">
             <h1>Book a <span className="font-pencil">workshop.</span></h1>
@@ -23,7 +23,7 @@ export default function BookingPage() {
           </header>
           <BookingRequestForm />
         </div>
-      </main>
+      </MainLayout>
     </>
   );
 }
