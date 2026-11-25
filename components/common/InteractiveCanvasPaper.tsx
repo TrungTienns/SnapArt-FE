@@ -318,7 +318,11 @@ export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperPr
         aria-pressed={drawingEnabled}
         onClick={() => setDrawingEnabled(enabled => !enabled)}
       >
-        {drawingEnabled ? "Xong · cuộn tiếp ↓" : "Vẽ trên banner"}
+        <span className="banner-paint-label">
+          <span lang="en">{drawingEnabled ? "Keep exploring" : "Make your mark"}</span>
+          <small lang="vi">{drawingEnabled ? "Xong · cuộn tiếp" : "Chạm để vẽ"}</small>
+        </span>
+        <span className="banner-paint-mark" aria-hidden="true">{drawingEnabled ? "↓" : "↗"}</span>
       </button>
     </>
   );

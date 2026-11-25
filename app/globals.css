@@ -2131,21 +2131,64 @@ html:has(.studio-postcard-dialog[open]) { overflow: hidden; scrollbar-gutter: st
 .banner-paint-toggle {
   display: none;
   position: absolute;
-  top: 100px;
-  left: 24px;
+  top: 96px;
+  right: 24px;
+  left: auto;
   z-index: 30;
   min-height: 44px;
-  padding: 10px 16px;
+  padding: 10px 14px;
   pointer-events: auto;
+  align-items: center;
+  gap: 16px;
+  transform: rotate(3deg);
+  box-shadow: 3px 4px 0 color-mix(in srgb, var(--color-text-primary) 12%, transparent);
   color: var(--color-text-primary);
   background: var(--color-text-inverse);
   border: 1px solid var(--color-border-canvas);
-  border-radius: 24px;
+  border-radius: 3px 11px 5px 3px;
   font-size: 13px;
   font-weight: 700;
 }
 .banner-paint-toggle[aria-pressed="true"] { background: var(--color-surface-canvas); }
 .banner-paint-toggle:focus-visible { outline: 2px solid var(--color-wordmark-r); outline-offset: 4px; }
 @media (any-pointer: coarse) {
-  .banner-paint-toggle { display: block; }
+  .banner-paint-toggle { display: flex; }
+}
+
+.banner-paint-label { display: grid; gap: 2px; text-align: left; }
+.banner-paint-label > span { font-family: var(--font-child-pencil), cursive; font-size: 24px; font-weight: 400; line-height: 1.1; }
+.banner-paint-label small { font-size: 11px; font-weight: 500; line-height: 1.4; }
+.banner-paint-mark { font-size: 25px; font-weight: 400; }
+.banner-paint-toggle[aria-pressed="true"] { transform: rotate(-2deg); }
+@media (max-width: 1100px) {
+  .site-mobile-menu nav a > .site-menu-link-label { color: inherit; font-family: Georgia, serif; }
+  .site-menu-link-label { display: grid; gap: 4px; }
+  .site-menu-link-label small {
+    font-family: var(--font-child-pencil), cursive;
+    color: var(--color-wordmark-r);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+  .site-mobile-menu nav .site-mobile-book .site-menu-link-label { font-family: var(--font-child-pencil), cursive; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .banner-paint-toggle { transition: transform 250ms ease, background-color 250ms ease; }
+  .site-mobile-menu[open] nav { animation: siteMenuIn 600ms cubic-bezier(.22,1,.36,1) both; }
+}
+
+.site-menu-arrow { width: 25px; height: 25px; flex-shrink: 0; color: var(--color-wordmark-r); }
+
+.header-snowman {
+  display: block;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.header-snowman svg { display: block; width: 100%; height: 100%; }
+@media (max-width: 600px) {
+  .site-header > div:first-child { gap: 10px; }
+  .header-snowman { width: 44px; height: 44px; }
 }

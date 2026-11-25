@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Search } from "lucide-react";
+import { ArrowUpRight, Search } from "lucide-react";
 import { en } from "@/locales";
+import { HeaderSnowman } from "@/components/common/HeaderSnowman";
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
@@ -88,6 +89,7 @@ export function Header() {
             className="h-11 md:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
           />
         </Link>
+        <HeaderSnowman />
         <div className="hidden sm:flex items-center text-xs font-bold tracking-wider">
           <span className="cursor-pointer border-b border-[#411f15] pb-0.5">ENG</span>
           <span className="mx-1.5 opacity-40">|</span>
@@ -176,11 +178,11 @@ export function Header() {
           }
         }}>
           <p className="site-menu-note font-pencil">a place for your next idea.</p>
-          <Link href="/workshops">Workshops <span aria-hidden="true">↗</span></Link>
-          <Link href="/custom-art">Custom art <span aria-hidden="true">↗</span></Link>
-          <Link href="/gallery">Gallery <span aria-hidden="true">↗</span></Link>
-          <Link href="/about">Our studio <span aria-hidden="true">↗</span></Link>
-          <Link href="/booking" className="site-mobile-book">Book a workshop <span aria-hidden="true">↗</span></Link>
+          <Link href="/workshops"><span className="site-menu-link-label" lang="en">Workshops<small lang="vi">Lớp vẽ</small></span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
+          <Link href="/custom-art"><span className="site-menu-link-label" lang="en">Custom art<small lang="vi">Vẽ theo yêu cầu</small></span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
+          <Link href="/gallery"><span className="site-menu-link-label" lang="en">Gallery<small lang="vi">Thư viện ảnh</small></span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
+          <Link href="/about"><span className="site-menu-link-label" lang="en">Our studio<small lang="vi">Về SnapArt</small></span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
+          <Link href="/booking" className="site-mobile-book"><span className="site-menu-link-label" lang="en">Book a workshop<small lang="vi">Đặt lịch vẽ</small></span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
         </nav>
       </details>
     </header>
