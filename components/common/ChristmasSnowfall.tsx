@@ -33,7 +33,7 @@ function SnowCrystals({ count }: { count: number }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.translate(48, 48);
-    ctx.strokeStyle = "#7bbce0";
+    ctx.strokeStyle = "#ffffffff";
     ctx.lineWidth = 3.5;
     ctx.lineCap = "round";
     for (let arm = 0; arm < 6; arm++) {
@@ -79,7 +79,7 @@ export function ChristmasSnowfall() {
     <div aria-hidden="true" style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 40 }}>
       <Snowfall
         snowflakeCount={count}
-        color="#8ac6e7"
+        color="#ffffffff"
         radius={[1.5, 3.5]}
         speed={[1, 2.4]}
         wind={[-0.2, 0.5]}
