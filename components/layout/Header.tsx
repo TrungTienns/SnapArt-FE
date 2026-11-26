@@ -3,12 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Search } from "lucide-react";
-import { en } from "@/locales";
+import { useHeaderMessages } from "@/locales/use-header-messages";
 import { HeaderSnowman } from "@/components/common/HeaderSnowman";
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 export function Header() {
+  const t = useHeaderMessages();
   const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
 
@@ -105,7 +106,7 @@ export function Header() {
           rel="noopener noreferrer"
           className="text-xs font-bold tracking-widest uppercase hover:underline"
         >
-          {en.header.social}
+          {t.social}
         </a>
       </div>
 
@@ -121,19 +122,19 @@ export function Header() {
 
         <nav className="flex items-center gap-5 md:gap-7 text-xs md:text-sm font-extrabold tracking-wider uppercase">
           <Link href="/workshops" className="hover:opacity-70 transition-opacity">
-            {en.header.nav.workshops}
+            {t.nav.workshops}
           </Link>
           <Link href="/custom-art" className="hover:opacity-70 transition-opacity text-[#411f15]">
             <span className="relative">
-              {en.header.nav.customArt}
+              {t.nav.customArt}
               <span className="absolute -top-1 -right-2 w-1.5 h-1.5 bg-[#f2b8cb] rounded-full"></span>
             </span>
           </Link>
           <Link href="/gallery" className="hidden sm:inline-block hover:opacity-70 transition-opacity">
-            {en.header.nav.gallery}
+            {t.nav.gallery}
           </Link>
           <Link href="/about" className="hidden md:inline-block hover:opacity-70 transition-opacity">
-            {en.header.nav.aboutUs}
+            {t.nav.aboutUs}
           </Link>
         </nav>
 
@@ -171,18 +172,18 @@ export function Header() {
           event.currentTarget.querySelector("summary")?.focus();
         }
       }}>
-        <summary aria-label="Toggle navigation"><span>Menu</span><span className="site-menu-icon" aria-hidden="true"><i /><i /><i /></span></summary>
-        <nav aria-label="Mobile navigation" onClick={event => {
+        <summary aria-label={t.menu.toggle}><span>{t.menu.label}</span><span className="site-menu-icon" aria-hidden="true"><i /><i /><i /></span></summary>
+        <nav aria-label={t.menu.navigation} onClick={event => {
           if (event.target instanceof Element && event.target.closest("a")) {
             event.currentTarget.closest("details")?.removeAttribute("open");
           }
         }}>
-          <p className="site-menu-note font-pencil">a place for your next idea.</p>
-          <Link href="/workshops"><span className="site-menu-link-label" lang="en">Workshops<small lang="vi">Lớp vẽ</small></span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
-          <Link href="/custom-art"><span className="site-menu-link-label" lang="en">Custom art<small lang="vi">Vẽ theo yêu cầu</small></span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
-          <Link href="/gallery"><span className="site-menu-link-label" lang="en">Gallery<small lang="vi">Thư viện ảnh</small></span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
-          <Link href="/about"><span className="site-menu-link-label" lang="en">Our studio<small lang="vi">Về SnapArt</small></span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
-          <Link href="/booking" className="site-mobile-book"><span className="site-menu-link-label" lang="en">Book a workshop<small lang="vi">Đặt lịch vẽ</small></span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
+          <p className="site-menu-note font-pencil">{t.menu.note}</p>
+          <Link href="/workshops"><span className="site-menu-link-label">{t.menu.workshops}</span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
+          <Link href="/custom-art"><span className="site-menu-link-label">{t.menu.customArt}</span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
+          <Link href="/gallery"><span className="site-menu-link-label">{t.menu.gallery}</span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
+          <Link href="/about"><span className="site-menu-link-label">{t.menu.aboutUs}</span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
+          <Link href="/booking" className="site-mobile-book"><span className="site-menu-link-label">{t.menu.booking}</span><ArrowUpRight aria-hidden="true" className="site-menu-arrow" strokeWidth={1.5} /></Link>
         </nav>
       </details>
     </header>

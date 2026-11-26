@@ -3,6 +3,17 @@ export const en = {
     brand: "SNAPART",
     lang: "ENG | VIE",
     social: "INST: @SNAPART.STUDIO",
+    menu: {
+      label: "Menu",
+      toggle: "Toggle navigation",
+      navigation: "Mobile navigation",
+      note: "a place for your next idea.",
+      workshops: "Workshops",
+      customArt: "Custom art",
+      gallery: "Gallery",
+      aboutUs: "Our studio",
+      booking: "Book a workshop",
+    },
     nav: {
       workshops: "WORKSHOPS",
       customArt: "CUSTOM ART",
@@ -10,6 +21,10 @@ export const en = {
       aboutUs: "ABOUT US",
       booking: "BOOK A SEAT",
     },
+  },
+  drawing: {
+    start: "Make your mark",
+    finish: "Keep exploring",
   },
   hero: {
     badgeAbout: "ABOUT US",
@@ -42,6 +57,7 @@ export const en = {
     kickerStudio: "Our studio",
     body: "We're passionate about painting in all its forms, and we love sitting around a splattered table with first-timers, friends, and anyone ready to turn “I can't draw” into “look what I made.”",
     cta: "About us",
+    mobileLocation: "An open studio · Saigon",
   },
   features: {
     tagWorkshops: "ART EXPERIENCES",
@@ -58,6 +74,8 @@ export const en = {
   },
   storyReel: {
     cinemaTitle: "The Story Of Us",
+    filmCaptionTitle: "Our story.",
+    filmCaptionNote: "A little room for colour.",
     openStory: "Read The Story Of Us",
     closeStory: "Close our story and return to the film",
     backToFilm: "Back to the film",

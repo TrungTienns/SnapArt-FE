@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { en } from "@/locales";
+import { ArrowUpRight } from "lucide-react";
 
 function TitleLine({
   children,
@@ -76,9 +77,33 @@ export function AboutUs() {
       ref={sectionRef}
       id="about-us"
       data-scroll-snap
-      aria-labelledby="about-us-title"
+      aria-label={en.aboutUs.cta}
       className="about-us-section relative bg-[var(--color-surface-muted)]"
     >
+      <div className="about-us-mobile">
+        <div className="about-us-mobile-heading">
+          <p className="art-kicker">{en.aboutUs.mobileLocation}</p>
+          <h2><Link href="/about">{en.aboutUs.cta}<ArrowUpRight aria-hidden="true" strokeWidth={1.3} /></Link></h2>
+          <p className="about-us-mobile-note font-pencil">{en.aboutUs.script}</p>
+        </div>
+        <div className="about-us-mobile-print">
+          <Image
+            src="/assets/images/snapart1.jpg"
+            alt="The painting table and easels inside SnapArt studio"
+            width={1920}
+            height={2560}
+            sizes="(max-width: 900px) 85vw, 1px"
+          />
+          <Image
+            src="/assets/icons/sun-character.svg"
+            alt=""
+            width={88}
+            height={88}
+            className="about-us-mobile-stamp"
+          />
+        </div>
+        <p className="about-us-mobile-intro">{en.aboutUs.intro}</p>
+      </div>
       <div className="about-us-stage">
         <AboutBlob layer="back" />
 

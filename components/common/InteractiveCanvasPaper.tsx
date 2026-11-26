@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useDrawingMessages } from "@/locales/use-header-messages";
 
 interface Point {
   x: number;
@@ -35,6 +36,7 @@ interface InteractiveCanvasPaperProps {
 }
 
 export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperProps) {
+  const t = useDrawingMessages();
   const [drawingEnabled, setDrawingEnabled] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const segmentsRef = useRef<StrokeSegment[]>([]);
@@ -319,8 +321,7 @@ export function InteractiveCanvasPaper({ drawAreaRef }: InteractiveCanvasPaperPr
         onClick={() => setDrawingEnabled(enabled => !enabled)}
       >
         <span className="banner-paint-label">
-          <span lang="en">{drawingEnabled ? "Keep exploring" : "Make your mark"}</span>
-          <small lang="vi">{drawingEnabled ? "Xong · cuộn tiếp" : "Chạm để vẽ"}</small>
+          <span>{drawingEnabled ? t.finish : t.start}</span>
         </span>
         <span className="banner-paint-mark" aria-hidden="true">{drawingEnabled ? "↓" : "↗"}</span>
       </button>

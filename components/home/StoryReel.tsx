@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { en } from "@/locales";
+import { Play, Pause } from "lucide-react";
 
 interface StoryReelProps {
   src?: string;
@@ -93,8 +94,8 @@ export function StoryReel({
       </div>
       <div className="sr-editorial-shade" aria-hidden="true" />
       <div className="sr-film-caption">
-        <h2 className="sr-film-caption-title"><span className="font-pencil">Our story.</span></h2>
-        <p className="sr-film-caption-note font-pencil">A little room for colour.</p>
+        <h2 className="sr-film-caption-title"><span className="font-pencil">{t.filmCaptionTitle}</span></h2>
+        <p className="sr-film-caption-note font-pencil">{t.filmCaptionNote}</p>
       </div>
       <button
         type="button"
@@ -103,7 +104,11 @@ export function StoryReel({
         aria-controls="snapart-story-film"
         onClick={() => void togglePlayback()}
         disabled={hasError}
-      />
+      >
+        <span className="sr-mobile-playback" aria-hidden="true">
+          {isPlaying ? <Pause size={18} strokeWidth={1.5} /> : <Play size={18} strokeWidth={1.5} />}
+        </span>
+      </button>
       {isDemo && <p className="sr-only">{t.demoLabel}</p>}
       {hasError && <p className="sr-cinema-error" role="status">{t.error}</p>}
     </section>
